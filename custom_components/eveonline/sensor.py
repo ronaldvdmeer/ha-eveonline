@@ -87,7 +87,6 @@ class EveOnlineSensor(CoordinatorEntity[EveOnlineCoordinator], SensorEntity):
             manufacturer="CCP Games",
             model="ESI API",
             sw_version=coordinator.data.server_version,
-            hw_version="ha-eveonline 0.1.1 by ronaldvdmeer",
             entry_type=DeviceEntryType.SERVICE,
             configuration_url="https://esi.evetech.net/ui/",
         )
