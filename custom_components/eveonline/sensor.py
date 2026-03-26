@@ -60,6 +60,7 @@ SERVER_SENSORS: tuple[EveOnlineSensorDescription, ...] = (
 # Character sensors (per-character device)
 # ---------------------------------------------------------------------------
 CHARACTER_SENSORS: tuple[EveOnlineSensorDescription, ...] = (
+    # --- Online / general ---
     EveOnlineSensorDescription(
         key="character_online",
         translation_key="character_online",
@@ -71,6 +72,30 @@ CHARACTER_SENSORS: tuple[EveOnlineSensorDescription, ...] = (
         ),
         available_fn=lambda data: data.character_online is not None,
     ),
+    # --- Location & ship ---
+    EveOnlineSensorDescription(
+        key="location",
+        translation_key="location",
+        icon="mdi:map-marker",
+        value_fn=lambda data: (
+            data.resolved_names.get(data.location.solar_system_id, str(data.location.solar_system_id))
+            if data.location
+            else None
+        ),
+        available_fn=lambda data: data.location is not None,
+    ),
+    EveOnlineSensorDescription(
+        key="ship",
+        translation_key="ship",
+        icon="mdi:rocket-launch",
+        value_fn=lambda data: (
+            data.resolved_names.get(data.ship.ship_type_id, str(data.ship.ship_type_id))
+            if data.ship
+            else None
+        ),
+        available_fn=lambda data: data.ship is not None,
+    ),
+    # --- Wallet ---
     EveOnlineSensorDescription(
         key="wallet_balance",
         translation_key="wallet_balance",
@@ -83,6 +108,26 @@ CHARACTER_SENSORS: tuple[EveOnlineSensorDescription, ...] = (
         ),
         available_fn=lambda data: data.wallet_balance is not None,
     ),
+    # --- Skills ---
+    EveOnlineSensorDescription(
+        key="total_sp",
+        translation_key="total_sp",
+        icon="mdi:brain",
+        state_class=SensorStateClass.TOTAL,
+        native_unit_of_measurement="SP",
+        value_fn=lambda data: data.skills.total_sp if data.skills else None,
+        available_fn=lambda data: data.skills is not None,
+    ),
+    EveOnlineSensorDescription(
+        key="unallocated_sp",
+        translation_key="unallocated_sp",
+        icon="mdi:brain",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="SP",
+        entity_registry_enabled_default=False,
+        value_fn=lambda data: data.skills.unallocated_sp if data.skills else None,
+        available_fn=lambda data: data.skills is not None,
+    ),
     EveOnlineSensorDescription(
         key="skill_queue_count",
         translation_key="skill_queue_count",
@@ -90,6 +135,17 @@ CHARACTER_SENSORS: tuple[EveOnlineSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement="skills",
         value_fn=lambda data: len(data.skill_queue),
+    ),
+    EveOnlineSensorDescription(
+        key="current_training_skill",
+        translation_key="current_training_skill",
+        icon="mdi:school",
+        value_fn=lambda data: (
+            data.resolved_names.get(data.skill_queue[0].skill_id, str(data.skill_queue[0].skill_id))
+            + f" {data.skill_queue[0].finished_level}"
+            if data.skill_queue
+            else None
+        ),
     ),
     EveOnlineSensorDescription(
         key="current_skill_finish",
@@ -101,6 +157,75 @@ CHARACTER_SENSORS: tuple[EveOnlineSensorDescription, ...] = (
             if data.skill_queue and data.skill_queue[0].finish_date
             else None
         ),
+    ),
+    # --- Mail ---
+    EveOnlineSensorDescription(
+        key="unread_mail",
+        translation_key="unread_mail",
+        icon="mdi:email-outline",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="messages",
+        value_fn=lambda data: (
+            data.mail_labels.total_unread_count if data.mail_labels else None
+        ),
+        available_fn=lambda data: data.mail_labels is not None,
+    ),
+    # --- Industry ---
+    EveOnlineSensorDescription(
+        key="industry_jobs",
+        translation_key="industry_jobs",
+        icon="mdi:factory",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="jobs",
+        value_fn=lambda data: len(
+            [j for j in data.industry_jobs if j.status == "active"]
+        ),
+    ),
+    EveOnlineSensorDescription(
+        key="next_industry_finish",
+        translation_key="next_industry_finish",
+        icon="mdi:clock-end",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        value_fn=lambda data: (
+            min(
+                (j.end_date for j in data.industry_jobs if j.status == "active"),
+                default=None,
+            )
+        ),
+    ),
+    # --- Market ---
+    EveOnlineSensorDescription(
+        key="sell_orders",
+        translation_key="sell_orders",
+        icon="mdi:tag-outline",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="orders",
+        value_fn=lambda data: len(
+            [o for o in data.market_orders if not o.is_buy_order]
+        ),
+    ),
+    EveOnlineSensorDescription(
+        key="buy_orders",
+        translation_key="buy_orders",
+        icon="mdi:cart-outline",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="orders",
+        value_fn=lambda data: len(
+            [o for o in data.market_orders if o.is_buy_order]
+        ),
+    ),
+    # --- Jump fatigue ---
+    EveOnlineSensorDescription(
+        key="jump_fatigue",
+        translation_key="jump_fatigue",
+        icon="mdi:timer-sand",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        value_fn=lambda data: (
+            data.jump_fatigue.jump_fatigue_expire_date
+            if data.jump_fatigue and data.jump_fatigue.jump_fatigue_expire_date
+            else None
+        ),
+        available_fn=lambda data: data.jump_fatigue is not None,
     ),
 )
 

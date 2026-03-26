@@ -31,14 +31,47 @@
       "character_online": {
         "name": "Character status"
       },
+      "location": {
+        "name": "Location"
+      },
+      "ship": {
+        "name": "Ship"
+      },
       "wallet_balance": {
         "name": "Wallet balance"
+      },
+      "total_sp": {
+        "name": "Total skill points"
+      },
+      "unallocated_sp": {
+        "name": "Unallocated skill points"
       },
       "skill_queue_count": {
         "name": "Skill queue"
       },
+      "current_training_skill": {
+        "name": "Current training skill"
+      },
       "current_skill_finish": {
         "name": "Current skill finish"
+      },
+      "unread_mail": {
+        "name": "Unread mail"
+      },
+      "industry_jobs": {
+        "name": "Industry jobs"
+      },
+      "next_industry_finish": {
+        "name": "Next industry finish"
+      },
+      "sell_orders": {
+        "name": "Sell orders"
+      },
+      "buy_orders": {
+        "name": "Buy orders"
+      },
+      "jump_fatigue": {
+        "name": "Jump fatigue"
       }
     }
   }
