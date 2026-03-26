@@ -11,12 +11,10 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntityDescription,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import EveOnlineConfigEntry, EveOnlineCoordinator, EveOnlineData
-from .const import DOMAIN
+from .entity import EveOnlineCharacterEntity, EveOnlineServerEntity
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -60,7 +58,7 @@ CHARACTER_BINARY_SENSORS: tuple[EveOnlineBinarySensorDescription, ...] = (
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: EveOnlineConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up Eve Online binary sensors from a config entry."""
     coordinator = entry.runtime_data
@@ -77,13 +75,10 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class EveOnlineBinarySensor(
-    CoordinatorEntity[EveOnlineCoordinator], BinarySensorEntity
-):
+class EveOnlineBinarySensor(BinarySensorEntity):
     """Base class for Eve Online binary sensors."""
 
     entity_description: EveOnlineBinarySensorDescription
-    _attr_has_entity_name = True
 
     @property
     def is_on(self) -> bool | None:
@@ -91,7 +86,7 @@ class EveOnlineBinarySensor(
         return self.entity_description.is_on_fn(self.coordinator.data)
 
 
-class EveOnlineServerBinarySensor(EveOnlineBinarySensor):
+class EveOnlineServerBinarySensor(EveOnlineServerEntity, EveOnlineBinarySensor):
     """Eve Online server binary sensor (shared Tranquility device)."""
 
     def __init__(
@@ -100,21 +95,13 @@ class EveOnlineServerBinarySensor(EveOnlineBinarySensor):
         description: EveOnlineBinarySensorDescription,
     ) -> None:
         """Initialize the binary sensor."""
-        super().__init__(coordinator)
+        super().__init__(coordinator, description.key)
         self.entity_description = description
-        self._attr_unique_id = f"{DOMAIN}_{description.key}"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, "tranquility")},
-            name="Eve Online (Tranquility)",
-            manufacturer="CCP Games",
-            model="ESI API",
-            sw_version=coordinator.data.server_status.server_version,
-            entry_type=DeviceEntryType.SERVICE,
-            configuration_url="https://esi.evetech.net/ui/",
-        )
 
 
-class EveOnlineCharacterBinarySensor(EveOnlineBinarySensor):
+class EveOnlineCharacterBinarySensor(
+    EveOnlineCharacterEntity, EveOnlineBinarySensor
+):
     """Eve Online character binary sensor (per-character device)."""
 
     def __init__(
@@ -123,22 +110,8 @@ class EveOnlineCharacterBinarySensor(EveOnlineBinarySensor):
         description: EveOnlineBinarySensorDescription,
     ) -> None:
         """Initialize the binary sensor."""
-        super().__init__(coordinator)
+        super().__init__(coordinator, description.key)
         self.entity_description = description
-        self._attr_unique_id = (
-            f"{DOMAIN}_{coordinator.character_id}_{description.key}"
-        )
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, str(coordinator.character_id))},
-            name=coordinator.character_name,
-            manufacturer="CCP Games",
-            model="Eve Online Character",
-            entry_type=DeviceEntryType.SERVICE,
-            via_device=(DOMAIN, "tranquility"),
-            configuration_url=(
-                f"https://evewho.com/character/{coordinator.character_id}"
-            ),
-        )
 
     @property
     def available(self) -> bool:
