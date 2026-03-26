@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Eve Online",
+        "description": "Set up the Eve Online integration to monitor the Tranquility server status and player count."
+      }
+    },
+    "abort": {
+      "already_configured": "Eve Online is already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "server_status": {
+        "name": "Server status"
+      },
+      "players_online": {
+        "name": "Players online"
+      },
+      "server_version": {
+        "name": "Server version"
+      }
+    }
+  }
+}
