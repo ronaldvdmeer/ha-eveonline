@@ -18,18 +18,20 @@
     }
   },
   "entity": {
-    "sensor": {
+    "binary_sensor": {
       "server_status": {
         "name": "Server status"
       },
+      "character_online": {
+        "name": "Character status"
+      }
+    },
+    "sensor": {
       "players_online": {
         "name": "Players online"
       },
       "server_version": {
         "name": "Server version"
-      },
-      "character_online": {
-        "name": "Character status"
       },
       "location": {
         "name": "Location"

@@ -12,6 +12,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -34,12 +35,6 @@ class EveOnlineSensorDescription(SensorEntityDescription):
 # ---------------------------------------------------------------------------
 SERVER_SENSORS: tuple[EveOnlineSensorDescription, ...] = (
     EveOnlineSensorDescription(
-        key="server_status",
-        translation_key="server_status",
-        icon="mdi:server",
-        value_fn=lambda data: "online" if data.server_status.players > 0 else "offline",
-    ),
-    EveOnlineSensorDescription(
         key="players_online",
         translation_key="players_online",
         icon="mdi:account-group",
@@ -51,6 +46,7 @@ SERVER_SENSORS: tuple[EveOnlineSensorDescription, ...] = (
         key="server_version",
         translation_key="server_version",
         icon="mdi:information-outline",
+        entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
         value_fn=lambda data: data.server_status.server_version,
     ),
@@ -60,18 +56,6 @@ SERVER_SENSORS: tuple[EveOnlineSensorDescription, ...] = (
 # Character sensors (per-character device)
 # ---------------------------------------------------------------------------
 CHARACTER_SENSORS: tuple[EveOnlineSensorDescription, ...] = (
-    # --- Online / general ---
-    EveOnlineSensorDescription(
-        key="character_online",
-        translation_key="character_online",
-        icon="mdi:account-check",
-        value_fn=lambda data: (
-            "online"
-            if data.character_online and data.character_online.online
-            else "offline"
-        ),
-        available_fn=lambda data: data.character_online is not None,
-    ),
     # --- Location & ship ---
     EveOnlineSensorDescription(
         key="location",
@@ -150,7 +134,6 @@ CHARACTER_SENSORS: tuple[EveOnlineSensorDescription, ...] = (
     EveOnlineSensorDescription(
         key="current_skill_finish",
         translation_key="current_skill_finish",
-        icon="mdi:clock-end",
         device_class=SensorDeviceClass.TIMESTAMP,
         value_fn=lambda data: (
             data.skill_queue[0].finish_date
@@ -184,7 +167,6 @@ CHARACTER_SENSORS: tuple[EveOnlineSensorDescription, ...] = (
     EveOnlineSensorDescription(
         key="next_industry_finish",
         translation_key="next_industry_finish",
-        icon="mdi:clock-end",
         device_class=SensorDeviceClass.TIMESTAMP,
         value_fn=lambda data: (
             min(
@@ -218,7 +200,6 @@ CHARACTER_SENSORS: tuple[EveOnlineSensorDescription, ...] = (
     EveOnlineSensorDescription(
         key="jump_fatigue",
         translation_key="jump_fatigue",
-        icon="mdi:timer-sand",
         device_class=SensorDeviceClass.TIMESTAMP,
         value_fn=lambda data: (
             data.jump_fatigue.jump_fatigue_expire_date
