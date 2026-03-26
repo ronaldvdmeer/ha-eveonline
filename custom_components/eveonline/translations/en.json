@@ -1,13 +1,20 @@
 {
   "config": {
     "step": {
-      "user": {
-        "title": "Eve Online",
-        "description": "Set up the Eve Online integration to monitor the Tranquility server status and player count."
+      "pick_implementation": {
+        "title": "Eve Online"
       }
     },
     "abort": {
-      "already_configured": "Eve Online is already configured."
+      "already_configured": "This character is already configured.",
+      "authorize_url_timeout": "Timeout generating authorize URL.",
+      "missing_configuration": "Please add Eve Online application credentials first.",
+      "no_url_available": "No URL available. Check the Home Assistant documentation.",
+      "oauth_error": "Received error from Eve Online SSO.",
+      "oauth_failed": "Error while connecting to Eve Online SSO.",
+      "oauth_timeout": "Timeout connecting to Eve Online SSO.",
+      "oauth_unauthorized": "OAuth authorization error.",
+      "reauth_successful": "Re-authentication was successful."
     }
   },
   "entity": {
@@ -20,6 +27,18 @@
       },
       "server_version": {
         "name": "Server version"
+      },
+      "character_online": {
+        "name": "Character status"
+      },
+      "wallet_balance": {
+        "name": "Wallet balance"
+      },
+      "skill_queue_count": {
+        "name": "Skill queue"
+      },
+      "current_skill_finish": {
+        "name": "Current skill finish"
       }
     }
   }
