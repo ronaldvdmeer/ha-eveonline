@@ -86,6 +86,7 @@ class EveOnlineSensor(CoordinatorEntity[EveOnlineCoordinator], SensorEntity):
             name="Eve Online (Tranquility)",
             manufacturer="CCP Games",
             model="ESI API",
+            sw_version=coordinator.data.server_version,
             entry_type=DeviceEntryType.SERVICE,
             configuration_url="https://esi.evetech.net/ui/",
         )
